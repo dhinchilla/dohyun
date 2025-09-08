@@ -1,0 +1,150 @@
+/* 기본 */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  padding-top: 70px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto Sans KR',
+    sans-serif;
+  color: #111;
+  background: #fff; /* 요청: 흰 바탕 */
+  line-height: 1.6;
+}
+
+/* 공통 래퍼 */
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* 헤더 */
+h1 {
+  font-size: clamp(24px, 3.4vw, 36px);
+  margin: 12px 0 6px;
+}
+.sub {
+  color: #666;
+  margin: 0 0 -20px;
+}
+
+/* 그리드 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 12px 0 24px;
+}
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 카드: a와 button 통일 스타일 */
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 22px 18px;
+  min-height: 120px;
+  border: 1.5px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  outline-offset: 3px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+    background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease; /* 부드럽게 */
+}
+
+/* 마우스 가까이 갔을 때: 살짝 커지고, 검정 바탕 + 흰 글자로 반전 */
+.card:hover {
+  transform: scale(1.05);
+  background: #111; /* 🔥 검정 */
+  color: #fff; /* 🔥 텍스트 흰색 */
+  border-color: #111;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* 키보드 접근성: 포커스 시에도 동일한 강조감 (hover와 동일 톤) */
+.card:focus-visible {
+  outline: 3px solid #222;
+  transform: scale(1.05);
+  background: #111;
+  color: #fff;
+  border-color: #111;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 18px;
+}
+.card-desc {
+  color: #666;
+  font-size: 14px;
+}
+/* 반전 시 .card-desc도 흰색으로 보이도록 */
+.card:hover .card-desc,
+.card:focus-visible .card-desc {
+  color: #fff;
+}
+
+/* details 영역: 대화창 말풍선 스타일 + 살짝 더 아래로 */
+/* details 영역 */
+.details {
+  position: relative;
+  border: 1.5px solid #ccc; /* ⬅️ 연한 회색(#eee) → 더 진한 회색(#ccc) */
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin: 24px 0 18px;
+  box-shadow: 0 1px 0 #f6f6f6 inset;
+  background: #fafafa;
+  scroll-margin-top: 28px;
+}
+
+/* 말풍선 꼬리 */
+.details::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 28px;
+  width: 14px;
+  height: 14px;
+  background: #fafafa;
+  border-left: 1.5px solid #ccc; /* ⬅️ 동일하게 #ccc */
+  border-top: 1.5px solid #ccc; /* ⬅️ 동일하게 #ccc */
+  transform: rotate(45deg);
+}
+
+.details h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+.details p {
+  margin: 0;
+  color: #333;
+}
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px 10px;
+  color: #888; /* 회색 글씨 */
+  font-size: 13px; /* 작은 글씨 */
+  margin-top: 40px; /* 위쪽과 살짝 간격 */
+  border-top: 1px solid #eee; /* 위쪽에 은은한 선 (선택사항) */
+}
