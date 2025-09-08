@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dohyun World</title>
+    <meta
+      name="description"
+      content="조금 덜 광고같고, 더 학생다움이 느껴지는 스크롤 쇼케이스"
+    />
+
+    <!-- ✍️ 학생 감성: 종이 질감 + 파스텔 + 도트/대시 보더 + 스티커 느낌 -->
+    <style>
+      :root {
+        --bg: #fffdfa; /* 종이같은 배경 */
+        --fg: #222; /* 본문 텍스트 */
+        --muted: #666; /* 보조 텍스트 */
+        --accent: #8bd3dd; /* 파스텔 민트(원하면 변경) */
+        --accent-2: #ffd166; /* 파스텔 옐로우 */
+        --ink: #111; /* 펜 잉크색 */
+        --maxw: 1040px;
+        --gap: 22px;
+        --radius: 18px;
+        --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont,
+          'Segoe UI', Roboto, Helvetica, Arial, 'Apple SD Gothic Neo',
+          'Noto Sans KR', sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        /* 공책모눈 느낌의 배경 */
+        background-image: repeating-linear-gradient(
+            0deg,
+            rgba(139, 211, 221, 0.18) 0 1px,
+            transparent 1px 32px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            rgba(139, 211, 221, 0.18) 0 1px,
+            transparent 1px 32px
+          );
+        background-attachment: fixed;
+        line-height: 1.5;
+        overflow-x: hidden;
+      }
+
+      /* 상단 네비: 스티커 탭 느낌 */
+      .nav {
+        position: sticky;
+        top: 10px;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+      }
+      .nav-inner {
+        display: flex;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1.5px dashed #d7d7d7;
+        box-shadow: var(--shadow);
+        backdrop-filter: saturate(120%) blur(4px);
+      }
+      .nav a {
+        font-size: 14px;
+        text-decoration: none;
+        color: var(--ink);
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid #eaeaea;
+        background: #fff;
+      }
+      .nav a:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+      }
+
+      main {
+        scroll-snap-type: y proximity;
+      }
+      section {
+        min-height: 100svh;
+        scroll-snap-align: start;
+        display: flex;
+        align-items: center;
+        position: relative;
+      }
+
+      .container {
+        width: 100%;
+        max-width: var(--maxw);
+        margin-inline: auto;
+        padding: calc(var(--gap) * 2) var(--gap);
+      }
+      .split {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: clamp(14px, 4vw, 48px);
+        align-items: center;
+      }
+      @media (max-width: 960px) {
+        .split {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* 학생스러운 과감한 타이포지만 너무 광고스럽지 않게 */
+      h1 {
+        font-size: clamp(36px, 9vw, 80px);
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
+      }
+      h2 {
+        font-size: clamp(24px, 6.4vw, 48px);
+        letter-spacing: -0.01em;
+        margin: 0 0 8px;
+      }
+      p.lead {
+        font-size: clamp(15px, 2.2vw, 18px);
+        color: var(--muted);
+        max-width: 68ch;
+      }
+
+      /* 하이라이트(형광펜) */
+      .hl {
+        position: relative;
+        display: inline-block;
+      }
+      .hl::before {
+        content: '';
+        position: absolute;
+        inset: auto -6px 0.18em -6px;
+        height: 0.6em;
+        background: var(--accent);
+        opacity: 0.5;
+        z-index: -1;
+        transform: rotate(-1.2deg);
+      }
+
+      /* 버튼: 스티커/배지 느낌 */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 14px;
+        border-radius: 999px;
+        text-decoration: none;
+        color: #0b1b1c;
+        background: linear-gradient(#fff, #f7ffff);
+        border: 1.6px solid #cfecee;
+        box-shadow: 0 8px 0 #bfe2e5;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 0 #bfe2e5;
+      }
+
+      /* 프레임: 대시 보더 + 살짝 기울어진 종이 카드 */
+      .frame {
+        position: relative;
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 2px dashed #e1e1e1;
+        background: #ffffff;
+        box-shadow: var(--shadow);
+        transform: rotate(-0.7deg);
+      }
+      .frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .tape {
+        position: absolute;
+        width: 86px;
+        height: 26px;
+        background: linear-gradient(90deg, #ffe9a9, #fff1c7);
+        top: -12px;
+        left: 18px;
+        transform: rotate(-8deg);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      /* 배경 톤은 은은하게 파스텔 스팟 */
+      .s-hero {
+        background: radial-gradient(
+          550px 240px at 75% 20%,
+          rgba(139, 211, 221, 0.28),
+          transparent
+        );
+      }
+      .s-identity {
+        background: radial-gradient(
+          420px 280px at 15% 30%,
+          rgba(255, 209, 102, 0.25),
+          transparent
+        );
+      }
+      .s-works {
+        background: radial-gradient(
+          500px 300px at 80% 55%,
+          rgba(139, 211, 221, 0.22),
+          transparent
+        );
+      }
+      .s-about {
+        background: radial-gradient(
+          460px 320px at 20% 15%,
+          rgba(255, 209, 102, 0.24),
+          transparent
+        );
+      }
+      .s-contact {
+        background: radial-gradient(
+          520px 260px at 50% 20%,
+          rgba(139, 211, 221, 0.2),
+          transparent
+        );
+      }
+
+      /* 카드 리스트(Works): 덜 각 잡힌 카드, 가벼운 호버 */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: clamp(12px, 2.2vw, 22px);
+      }
+      @media (max-width: 960px) {
+        .cards {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 640px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        background: #fff;
+        border: 1.6px dashed #e6e6e6;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: transform 0.15s ease;
+      }
+      .card:hover {
+        transform: translateY(-3px) rotate(-0.3deg);
+      }
+      .card img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+      }
+      .card .cap {
+        padding: 12px 14px 16px;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 12px;
+        color: #204244;
+        border: 1px solid #cfecee;
+        background: #f4feff;
+        padding: 4px 8px;
+        border-radius: 999px;
+        margin-right: 8px;
+      }
+
+      .scroll-hint {
+        position: absolute;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        color: #7a9ea1;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      /* 접근성: 모션 최소화 존중 */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+
+      /* 푸터 */
+      footer {
+        padding: 24px;
+        text-align: center;
+        color: #6b6b6b;
+        font-size: 12px;
+      }
+    </style>
+
+    <!-- 애니메이션은 조금 더 수제 느낌으로 가볍게 -->
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    ></script>
+  </head>
+  <body>
+    <!-- 상단 네비게이션 (학생 스티커 탭) -->
+    <nav class="nav" aria-label="주요 섹션 바로가기">
+      <div class="nav-inner">
+        <a href="#hero">Home</a>
+        <a href="#identity">Identity</a>
+        <a href="#works">Works</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+
+    <main>
+      <!-- ============================ HERO ============================ -->
+      <section id="hero" class="s-hero">
+        <div class="container split">
+          <div>
+            <h1 class="reveal-up">
+              안녕하세요, <span class="hl">지안</span>입니다.
+            </h1>
+            <p class="lead reveal-up" style="transition-delay: 0.06s">
+              광고처럼 번쩍이진 않지만, 손맛과 리듬으로 기억되는 인터랙션을
+              만듭니다.
+            </p>
+            <div
+              style="margin-top: 18px"
+              class="reveal-up"
+              style="transition-delay: 0.1s"
+            >
+              <a class="btn" href="#works" aria-label="작업 보러가기"
+                >작업 보러가기 ✨</a
+              >
+            </div>
+          </div>
+          <div class="frame reveal-float">
+            <span class="tape" aria-hidden="true"></span>
+            <!-- ▼▼▼ REPLACE_HERE: HERO 이미지 교체 ▼▼▼ -->
+            <img
+              src="https://images.unsplash.com/photo-1520975922321-6b1f1be1df51?q=80&w=1920&auto=format&fit=crop"
+              alt="지안을 상징하는 히어로 이미지(학생 작업 감성)"
+            />
+          </div>
+        </div>
+        <div class="scroll-hint" aria-hidden="true">Scroll</div>
+      </section>
+
+      <!-- ============================ IDENTITY ============================ -->
+      <section id="identity" class="s-identity">
+        <div class="container split">
+          <div class="frame reveal-float" style="transform: rotate(1.2deg)">
+            <span
+              class="tape"
+              style="left: auto; right: 18px; transform: rotate(7deg)"
+              aria-hidden="true"
+            ></span>
+            <!-- ▼▼▼ REPLACE_HERE: IDENTITY 비주얼 교체 ▼▼▼ -->
+            <img
+              src="https://images.unsplash.com/photo-1526947425960-945c6e72858f?q=80&w=1920&auto=format&fit=crop"
+              alt="아이덴티티를 상징하는 추상 이미지(파스텔)"
+            />
+          </div>
+          <div>
+            <h2 class="reveal-up">
+              Designing experiences, <br />not just screens.
+            </h2>
+            <p class="lead reveal-up" style="transition-delay: 0.05s">
+              선과 시선, 그리고 타이포의 박자를 좋아합니다. 완벽주의보다는
+              <span class="hl">꾸준한 실험</span>을 탑니다.
+            </p>
+            <div
+              class="reveal-up"
+              style="margin-top: 10px; transition-delay: 0.1s"
+            >
+              <span class="badge">UX Notes</span>
+              <span class="badge">Motion Sketch</span>
+              <span class="badge">Typography</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ WORKS ============================ -->
+      <section id="works" class="s-works">
+        <div class="container">
+          <h2 class="reveal-up">Selected Works (학생 버전)</h2>
+          <p class="lead reveal-up" style="transition-delay: 0.05s">
+            거창한 케이스 스터디 대신, <span class="hl">실험 로그</span>를
+            솔직하게 보여줍니다.
+          </p>
+
+          <div class="cards" style="margin-top: 16px">
+            <!-- 카드 1 -->
+            <article class="card reveal-float">
+              <!-- ▼▼▼ REPLACE_HERE: 작업 썸네일 교체 ▼▼▼ -->
+              <img
+                src="https://images.unsplash.com/photo-1553484771-047a44eee27a?q=80&w=1920&auto=format&fit=crop"
+                alt="프로젝트 A 썸네일"
+              />
+              <div class="cap">
+                <div style="margin-bottom: 6px">
+                  <span class="badge">Web</span><span class="badge">UX/UI</span>
+                </div>
+                <strong>프로젝트 A – 반응형 실험</strong>
+                <p class="lead" style="margin: 6px 0 0">
+                  그리드 해상도에 따라 모듈이 변하는 간단한 규칙.
+                </p>
+              </div>
+            </article>
+
+            <!-- 카드 2 -->
+            <article class="card reveal-float">
+              <img
+                src="https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6?q=80&w=1920&auto=format&fit=crop"
+                alt="프로젝트 B 썸네일"
+              />
+              <div class="cap">
+                <div style="margin-bottom: 6px">
+                  <span class="badge">Motion</span><span class="badge">AE</span>
+                </div>
+                <strong>프로젝트 B – 타이포 리듬</strong>
+                <p class="lead" style="margin: 6px 0 0">
+                  스크롤 속도에 반응하는 자간/행간 애니메이션 스터디.
+                </p>
+              </div>
+            </article>
+
+            <!-- 카드 3 -->
+            <article class="card reveal-float">
+              <img
+                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1920&auto=format&fit=crop"
+                alt="프로젝트 C 썸네일"
+              />
+              <div class="cap">
+                <div style="margin-bottom: 6px">
+                  <span class="badge">Brand</span
+                  ><span class="badge">Type</span>
+                </div>
+                <strong>프로젝트 C – 손글씨 로고</strong>
+                <p class="lead" style="margin: 6px 0 0">
+                  벡터/픽셀/잉크 조합으로 러프함 살리기.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ ABOUT ============================ -->
+      <section id="about" class="s-about">
+        <div class="container split">
+          <div>
+            <h2 class="reveal-up">About Ji‑an</h2>
+            <p class="lead reveal-up" style="transition-delay: 0.05s">
+              사용자 흐름을 먼저 그리고, 디자인은 나중에 다듬습니다. 협업에선
+              Figma 코멘트와 플러그인 자동화를 즐겨 써요. (그리고 파인애플🍍을
+              사랑한다는 소문… 사실임)
+            </p>
+            <div
+              style="margin-top: 14px"
+              class="reveal-up"
+              style="transition-delay: 0.1s"
+            >
+              <a class="btn" href="#contact">함께 실험해요 →</a>
+            </div>
+          </div>
+          <div class="frame reveal-float" style="transform: rotate(-0.2deg)">
+            <span class="tape" aria-hidden="true"></span>
+            <!-- ▼▼▼ REPLACE_HERE: 프로필 사진/짧은 영상 교체 ▼▼▼ -->
+            <img
+              src="https://images.unsplash.com/photo-1485727749690-d091e8284ef3?q=80&w=1920&auto=format&fit=crop"
+              alt="지안의 포트레이트 또는 작업 공간 사진"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ CONTACT ============================ -->
+      <section id="contact" class="s-contact">
+        <div class="container">
+          <div style="text-align: center; max-width: 860px; margin: 0 auto">
+            <h2 class="reveal-up">Let’s create something together.</h2>
+            <p class="lead reveal-up" style="transition-delay: 0.05s">
+              메일이나 인스타 DM 환영합니다. 답장이 조금 느리면, 과제 중이에요
+              😅
+            </p>
+            <div
+              style="margin-top: 14px"
+              class="reveal-up"
+              style="transition-delay: 0.1s"
+            >
+              <!-- ▼▼▼ REPLACE_HERE: 실제 링크/아이콘 교체 ▼▼▼ -->
+              <a class="btn" href="mailto:hello@example.com">메일 보내기</a>
+              <a
+                class="btn"
+                href="https://instagram.com/"
+                target="_blank"
+                rel="noopener"
+                >인스타그램</a
+              >
+              <a
+                class="btn"
+                href="https://github.com/"
+                target="_blank"
+                rel="noopener"
+                >GitHub</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      ©
+      <script>
+        document.write(new Date().getFullYear());
+      </script>
+      JI‑AN — Made with ramen & VS Code ♥
+    </footer>
+
+    <script>
+      // =====================
+      // GSAP: 과하지 않은 등장 모션 (학생 감성)
+      // =====================
+      window.addEventListener('DOMContentLoaded', () => {
+        if (!window.gsap || !window.ScrollTrigger) return;
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 텍스트 살짝 위로 + 페이드인
+        gsap.utils.toArray('.reveal-up').forEach((el) => {
+          gsap.from(el, {
+            y: 16,
+            opacity: 0,
+            duration: 0.7,
+            ease: 'power2.out',
+            delay: parseFloat(el.style.transitionDelay) || 0,
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+            },
+          });
+        });
+
+        // 이미지/프레임은 살짝 떠오르고 회전 보정
+        gsap.utils.toArray('.reveal-float').forEach((el) => {
+          gsap.from(el, {
+            y: 20,
+            rotation: -1.2,
+            opacity: 0,
+            duration: 0.9,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 90%',
+              toggleActions: 'play none none reverse',
+            },
+          });
+        });
+
+        // 섹션 배경 패럴랙스는 아주 은은하게
+        gsap.utils.toArray('section').forEach((sec) => {
+          gsap.fromTo(
+            sec,
+            { backgroundPosition: '50% 55%' },
+            {
+              backgroundPosition: '50% 45%',
+              ease: 'none',
+              scrollTrigger: {
+                trigger: sec,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+              },
+            }
+          );
+        });
+      });
+    </script>
+  </body>
+</html>
