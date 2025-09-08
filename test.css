@@ -148,3 +148,71 @@ h1 {
   margin-top: 40px; /* 위쪽과 살짝 간격 */
   border-top: 1px solid #eee; /* 위쪽에 은은한 선 (선택사항) */
 }
+/* ===== Gallery (Portfolio) ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+}
+.modal[hidden] {
+  display: none;
+}
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.modal-box {
+  position: relative;
+  background: #fff;
+  border: 1.5px solid #ddd; /* 카드와 통일 */
+  border-radius: 12px; /* 카드와 통일 */
+  padding: 12px;
+  max-width: 80%;
+  max-height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.modal-box img {
+  max-width: 100%;
+  max-height: 70vh;
+  display: block;
+  border-radius: 8px;
+}
+
+.gal-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+}
+.gal-btn.prev {
+  left: -44px;
+}
+.gal-btn.next {
+  right: -44px;
+}
+.gal-btn.close {
+  top: -44px;
+  right: 0;
+  transform: none;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  background: rgba(0, 0, 0, 0.6);
+}

@@ -51,16 +51,11 @@
         </button>
 
         <!-- 4: 텍스트 카드 -->
-        <a
-          class="card"
-          data-type="link"
-          href="https://example.com/portfolio"
-          target="_blank"
-          rel="noopener"
-        >
-          <span class="card-title">Portfolio</span>
-          <span class="card-desc">새 탭에서 열기</span>
-        </a>
+        <!-- 4: 포트폴리오 카드 (갤러리 열기) -->
+        <button class="card" id="openGallery" type="button">
+          <span class="card-title">In High School</span>
+          <span class="card-desc">고등학생때 작업들</span>
+        </button>
 
         <!-- 5: 링크 카드 -->
         <a
@@ -92,7 +87,7 @@
         <p>
           때론 모던하고, 때론 개성 넘치는 디자인을 추구하는
           커뮤니케이션디자인전공 2학년 김도현입니다. <br />
-          본가는 전북특별자치도 군산이며 취미는 드라이브입니다. 탁 트인 도로와
+          2005년 1월 22일 군산에서 태어나 취미는 드라이브입니다. 탁 트인 도로와
           노을이 지는 하늘을 볼 때 쌓여있던 스트레스가 풀리고 잡생각없이 오직
           운전에만 집중하는 그 시간이 이젠 일상이 되었습니다.
         </p>
@@ -115,6 +110,22 @@
         </p>
       </section>
     </main>
+    <!-- Portfolio Gallery Modal -->
+    <div class="modal" id="galleryModal" hidden>
+      <div class="modal-backdrop"></div>
+      <!-- 카드와 통일된 '상자' 형태의 프레임 -->
+      <div
+        class="modal-box"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Portfolio gallery"
+      >
+        <button class="gal-btn close" aria-label="닫기">×</button>
+        <button class="gal-btn prev" aria-label="이전">&#8592;</button>
+        <img id="galleryImage" src="" alt="portfolio image" />
+        <button class="gal-btn next" aria-label="다음">&#8594;</button>
+      </div>
+    </div>
 
     <script>
       // 텍스트 카드 토글
@@ -142,6 +153,51 @@
             panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         });
+      });
+      /* === Portfolio Gallery (최소 구현) === */
+      const images = [
+        'images/work0.jpg',
+        'images/work1.jpg',
+        'images/work2.jpg',
+        'images/work3.jpg',
+        'images/work4.jpg',
+      ]; // 여기에 너의 이미지 경로/파일명만 맞게 넣으면 됨
+
+      const openBtn = document.getElementById('openGallery');
+      const modal = document.getElementById('galleryModal');
+      const imgEl = document.getElementById('galleryImage');
+      const btnPrev = modal.querySelector('.prev');
+      const btnNext = modal.querySelector('.next');
+      const btnClose = modal.querySelector('.close');
+      const backdrop = modal.querySelector('.modal-backdrop');
+
+      let idx = 0;
+      const show = (i) => {
+        idx = (i + images.length) % images.length;
+        imgEl.src = images[idx];
+      };
+      const open = () => {
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        show(0);
+      };
+      const close = () => {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+      };
+
+      openBtn.addEventListener('click', open);
+      btnClose.addEventListener('click', close);
+      backdrop.addEventListener('click', close);
+      btnNext.addEventListener('click', () => show(idx + 1));
+      btnPrev.addEventListener('click', () => show(idx - 1));
+
+      // 키보드 지원
+      window.addEventListener('keydown', (e) => {
+        if (modal.hidden) return;
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowRight') show(idx + 1);
+        if (e.key === 'ArrowLeft') show(idx - 1);
       });
     </script>
     <footer class="footer">
